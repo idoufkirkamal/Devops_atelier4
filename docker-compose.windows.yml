@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - //var/run/docker.sock:/var/run/docker.sock
+      # If using Docker Desktop on Windows, you might need a different path
+      # - //./pipe/docker_engine:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    container_name: jenkins
+    user: root
+
+  flask-app:
+    build: .
+    ports:
+      - "5000:5000"
+    container_name: flask-app
+    depends_on:
+      - jenkins
+
+volumes:
+  jenkins_home:
